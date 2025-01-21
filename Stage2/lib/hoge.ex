@@ -23,19 +23,27 @@ defmodule Hoge do
 
     unless window_should_close?() do
       draw(x)
-      x = if x > 360, do: 1, else: x + 1
-      main_loop(x)
+      |> update()
+      |> main_loop()
     end
   end
+
+  defp update(x) when x > 100, do: 0
+  defp update(x), do: x + 1
 
   defp draw(x) do
     clear_background(Exray.Utils.Colors.white())
     begin_drawing()
 
-    [px, py] = point(x * 4, 400, 300, x)
-    Basic.draw_circle(px, py, 10.0, Exray.Utils.Colors.blue())
+    Enum.each(10..72, fn r -> draw_circle_point(r, x) end)
 
     end_drawing()
+    x
+  end
+
+  defp draw_circle_point(r, x) do
+    [px, py] = point(r * 20, 400, 300, x * r * 0.1)
+    Basic.draw_circle(px, py, 10.0, Exray.Utils.Colors.blue())
   end
 
   def point(angle, x, y, radius) do
