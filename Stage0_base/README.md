@@ -17,7 +17,7 @@ $ mix compile.exray
 ```sh
 $ sh run.sh
 ```
-
+![実行結果](./deme.png)
 
 ## lib/hoge.exを編集して下さい
 - draw関数の`# ここに描画処理`を書き換えて下さい

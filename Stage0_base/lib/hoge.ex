@@ -6,7 +6,7 @@ defmodule Hoge do
   alias Exray.Text.Drawing
   alias Exray.Core.Input.Keyboard
 
-  def run(width \\ 800, height \\ 600, title \\ "Hello World!") do
+  def run(width \\ 800, height \\ 600, title \\ "DevelopGameX") do
     init_window(width, height, title)
     set_target_fps(60)
     main_loop(25)
