@@ -50,14 +50,16 @@ defmodule Hoge do
 
   # 描画処理を行う関数です。引数を受け取り、描画処理を行い、そのまま返却します。
   defp draw(x) do
+
+    m =  {400, 100}
+
     # 背景を白でクリアします。
     clear_background(Exray.Utils.Colors.white())
 
     # 描画開始
     begin_drawing()
 
-    # 円を描画します。中心座標は(400, 300)、半径は10.0、色は青です。
-    Basic.draw_circle(400, 300, 10.0, Exay.Utils.Colors.blue)
+    circle(m)
 
     # 描画終了
     end_drawing()
@@ -65,4 +67,11 @@ defmodule Hoge do
     # 引数をそのまま返却します。
     x
   end
+
+  def circle({x, y}) do
+      # 円を描画します。中心座標は(400, 300)、半径は10.0、色は青です。
+      Basic.draw_circle(x, y, 10.0, Exray.Utils.Colors.blue())
+  end
+
+
 end
