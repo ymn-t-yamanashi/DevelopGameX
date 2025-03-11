@@ -1,29 +1,21 @@
-# DevelopGameX スターターキット
+# Hoge
 
-## Stage0_baseをコピーして下さい
-```sh
-$ cp Stage0_base Stage100
+**TODO: Add description**
+
+## Installation
+
+If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+by adding `hoge` to your list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:hoge, "~> 0.1.0"}
+  ]
+end
 ```
-※Stage100の部分は自由につけて下さい
 
-## ライブラリ取得＆コンパイル
-下記は1度だけ必要です
-```sh
-$ mix deps.get
-$ mix compile.exray
-```
+Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
+and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
+be found at <https://hexdocs.pm/hoge>.
 
-## 実行できるか確認して下さい
-```sh
-$ sh run.sh
-```
-![実行結果](./deme.png)
-
-## lib/hoge.exを編集して下さい
-- draw関数の`# ここに描画処理`を書き換えて下さい
-- https://hexdocs.pm/exray/Exray.Shapes.Basic.html を参考にして下さい
-
-## 参考資料
-Exrayを使ってElixirで円を描画してみる
-
-https://qiita.com/t-yamanashi/items/35f89051c53899e49d70
