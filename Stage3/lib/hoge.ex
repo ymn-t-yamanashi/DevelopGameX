@@ -43,7 +43,7 @@ defmodule Hoge do
     |> Map.merge(%{player: %{x: x, y: character_data.player.y}})
   end
 
-  defp update_enems(%{enemys: enemys} = character_data)do
+  defp update_enems(%{enemys: enemys} = character_data) do
     character_data
     |> Map.merge(%{enemys: Enum.map(enemys, &update_enem/1)})
   end
@@ -52,7 +52,7 @@ defmodule Hoge do
   defp update_enem(%{x: x, y: y}), do: %{x: x, y: y + 5}
 
   defp draw(character_data) do
-    clear_background(Exray.Utils.Colors.white())
+    clear_background(Exray.Utils.Colors.black())
     begin_drawing()
 
     # ここに描画処理
@@ -64,29 +64,30 @@ defmodule Hoge do
   end
 
   defp draw_player(%{player: player}) do
-    Basic.draw_circle(
-      player.x,
-      player.y,
-      10.0,
-      Exray.Utils.Colors.blue()
-    )
+    create_rectangle(player.x, player.y)
+    |> Basic.draw_rectangle_rec(Exray.Utils.Colors.blue())
   end
 
   defp draw_enems(%{enemys: enemys}), do: Enum.each(enemys, &draw_enem/1)
 
   defp draw_enem(%{x: x, y: y}) do
-    Basic.draw_circle(
-      x,
-      y,
-      10.0,
-      Exray.Utils.Colors.red()
-    )
+    create_rectangle(x, y)
+    |> Basic.draw_rectangle_rec(Exray.Utils.Colors.red())
   end
 
   defp initialization_character_data do
     %{
       player: %{x: 400, y: 550},
-      enemys: Enum.map(1..100, fn _-> initialization_enemy() end)
+      enemys: Enum.map(1..100, fn _ -> initialization_enemy() end)
+    }
+  end
+
+  defp create_rectangle(x, y) do
+    %Exray.Structs.Rectangle{
+      height: 25.0,
+      width: 25.0,
+      x: x * 1.0,
+      y: y * 1.0
     }
   end
 
