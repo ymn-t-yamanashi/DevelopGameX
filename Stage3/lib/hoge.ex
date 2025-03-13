@@ -8,7 +8,7 @@ defmodule Hoge do
 
   def run(width \\ 800, height \\ 600, title \\ "DevelopGameX") do
     init_window(width, height, title)
-    set_target_fps(60)
+    set_target_fps(30)
 
     initialization_character_data()
     |> main_loop()
@@ -29,7 +29,17 @@ defmodule Hoge do
 
   # ここに座標計算
   defp update(character_data) do
+    update_player(character_data)
+  end
+
+  defp update_player(%{player: player} = character_data) do
+    x =
+      Keyboard.get_key_pressed()
+      |> move()
+      |> then(&(&1 + player.x))
+
     character_data
+    |> Map.merge(%{player: %{x: x, y: character_data.player.y}})
   end
 
   defp draw(character_data) do
@@ -37,24 +47,44 @@ defmodule Hoge do
     begin_drawing()
 
     # ここに描画処理
-    Basic.draw_circle(
-      character_data.player.x,
-      character_data.player.x,
-      10.0,
-      Exray.Utils.Colors.blue()
-    )
+    draw_player(character_data)
+    draw_enems(character_data)
 
     end_drawing()
     character_data
   end
 
+  defp draw_player(%{player: player}) do
+    Basic.draw_circle(
+      player.x,
+      player.y,
+      10.0,
+      Exray.Utils.Colors.blue()
+    )
+  end
+
+  defp draw_enems(%{enemys: enemys}), do: Enum.each(enemys, &draw_enem/1)
+
+  defp draw_enem(%{x: x, y: y}) do
+    Basic.draw_circle(
+      x,
+      y,
+      10.0,
+      Exray.Utils.Colors.red()
+    )
+  end
+
   defp initialization_character_data do
     %{
-      player: %{x: 300, y: 300},
-      enemy: [
+      player: %{x: 400, y: 550},
+      enemys: [
         %{x: 100, y: 200},
         %{x: 200, y: 100}
       ]
     }
   end
+
+  defp move(262), do: 50
+  defp move(263), do: -50
+  defp move(_), do: 0
 end
