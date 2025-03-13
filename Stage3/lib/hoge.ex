@@ -9,36 +9,52 @@ defmodule Hoge do
   def run(width \\ 800, height \\ 600, title \\ "DevelopGameX") do
     init_window(width, height, title)
     set_target_fps(60)
-    main_loop(25)
 
-    if window_should_close?() do
-      close_window()
-    end
+    initialization_character_data()
+    |> main_loop()
 
+    if window_should_close?(), do: close_window()
     :ok
   end
 
-  defp main_loop(x) do
-    unless window_is_ready?(), do: main_loop(x)
+  defp main_loop(character_data) do
+    unless window_is_ready?(), do: main_loop(character_data)
 
     unless window_should_close?() do
-      draw(x)
+      draw(character_data)
       |> update()
       |> main_loop()
     end
   end
 
   # ここに座標計算
-  defp update(x), do: x
+  defp update(character_data) do
+    character_data
+  end
 
-  defp draw(x) do
+  defp draw(character_data) do
     clear_background(Exray.Utils.Colors.white())
     begin_drawing()
 
     # ここに描画処理
-    Basic.draw_circle(400, 300, 10.0, Exray.Utils.Colors.blue())
+    Basic.draw_circle(
+      character_data.player.x,
+      character_data.player.x,
+      10.0,
+      Exray.Utils.Colors.blue()
+    )
 
     end_drawing()
-    x
+    character_data
+  end
+
+  defp initialization_character_data do
+    %{
+      player: %{x: 300, y: 300},
+      enemy: [
+        %{x: 100, y: 200},
+        %{x: 200, y: 100}
+      ]
+    }
   end
 end
