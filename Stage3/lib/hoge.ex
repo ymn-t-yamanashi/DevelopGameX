@@ -17,19 +17,23 @@ defmodule Hoge do
   @window_height 600
   @player_initial_x 400
   @player_initial_y 550
+  @bottom_x 650
   @enemy_count 50
   @player_movement_speed 30
-  @enem_movement_speed 3
+  @enem_movement_speed 2
   @rectangle_size 25.0
   @text_position_x 10
   @text_position_y 10
   @text_size 30
+  @fps 60
+  @right_arrow_key 262
+  @left_arrow_key 263
 
   def run(width \\ @window_width, height \\ @window_height, title \\ "DevelopGameX") do
     # ウィンドウ初期化
     init_window(width, height, title)
     # FPSを30に設定
-    set_target_fps(30)
+    set_target_fps(@fps)
 
     # 初期キャラクターデータを作成し、メインループを開始
     initialization_character_data()
@@ -85,13 +89,13 @@ defmodule Hoge do
   end
 
   # 敵キャラクターの初期位置を生成する関数
-  defp initialization_enemy, do: %{x: Enum.random(2..40) * 25, y: Enum.random(-1..-40) * 100}
+  defp initialization_enemy, do: %{x: Enum.random(50..750), y: Enum.random(-100..-4000)}
 
   # 移動量を取得する関数（左右移動）
   # 右矢印キー
-  defp move(262), do: @player_movement_speed
+  defp move(@right_arrow_key), do: @player_movement_speed
   # 左矢印キー
-  defp move(263), do: -@player_movement_speed
+  defp move(@left_arrow_key), do: -@player_movement_speed
   # その他の場合は移動なし
   defp move(_), do: 0
 
@@ -120,10 +124,9 @@ defmodule Hoge do
 
   # 描画処理を行う関数
   defp draw(character_data) do
+    begin_drawing()
     # 背景をクリア（黒）
     clear_background(Colors.black())
-    begin_drawing()
-
     # プレイヤー、敵キャラクター、カウントの描画を実行
     draw_player(character_data)
     draw_enems(character_data)
@@ -172,7 +175,7 @@ defmodule Hoge do
 
   # 個々の敵キャラクターを更新する関数（落下）
   # 床に達したらリセット
-  defp update_enem(%{x: x, y: y}) when y > 650, do: initialization_enemy()
+  defp update_enem(%{x: x, y: y}) when y > @bottom_x, do: initialization_enemy()
   # 敵を下方向に移動
   defp update_enem(%{x: x, y: y}), do: %{x: x, y: y + @enem_movement_speed}
 
