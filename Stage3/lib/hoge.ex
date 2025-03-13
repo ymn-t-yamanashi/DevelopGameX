@@ -32,6 +32,7 @@ defmodule Hoge do
   defp update(character_data) do
     update_player(character_data)
     |> update_enems()
+    |> update_count()
   end
 
   defp update_player(%{player: player} = character_data) do
@@ -42,6 +43,26 @@ defmodule Hoge do
 
     character_data
     |> Map.merge(%{player: %{x: x, y: player.y}})
+  end
+
+  defp update_count(%{player: player, enemys: enemys, count: count} = character_data) do
+    collided_and_enemy =
+      Enum.map(enemys, fn enemy -> update_collided_and_enemy(player, enemy) end)
+
+    new_count = Enum.map(collided_and_enemy, fn i -> i.collided end) |> Enum.sum()
+    new_enemys = Enum.map(collided_and_enemy, fn i -> i.enemy end)
+
+    character_data
+    |> Map.merge(%{count: count + new_count, enemys: new_enemys})
+  end
+
+  defp update_collided_and_enemy(player, enemy) do
+    collided = collided?(player, enemy)
+
+    %{
+      collided: if(collided, do: 1, else: 0),
+      enemy: if(collided, do: initialization_enemy(), else: enemy)
+    }
   end
 
   defp update_enems(%{enemys: enemys} = character_data) do
@@ -103,4 +124,10 @@ defmodule Hoge do
   defp move(262), do: 30
   defp move(263), do: -30
   defp move(_), do: 0
+
+  defp collided?(%{x: x1, y: y1}, %{x: x2, y: y2}), do: collided?(x1, y1, 25, 25, x2, y2, 25, 25)
+
+  def collided?(x1, y1, w1, h1, x2, y2, w2, h2) do
+    x1 <= x2 + w2 && x1 + w1 >= x2 && y1 <= y2 + h2 && y1 + h1 >= y2
+  end
 end
