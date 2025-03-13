@@ -30,6 +30,7 @@ defmodule Hoge do
   # ここに座標計算
   defp update(character_data) do
     update_player(character_data)
+    |> update_enems()
   end
 
   defp update_player(%{player: player} = character_data) do
@@ -41,6 +42,14 @@ defmodule Hoge do
     character_data
     |> Map.merge(%{player: %{x: x, y: character_data.player.y}})
   end
+
+  defp update_enems(%{enemys: enemys} = character_data)do
+    character_data
+    |> Map.merge(%{enemys: Enum.map(enemys, &update_enem/1)})
+  end
+
+  defp update_enem(%{x: x, y: y}) when y > 650, do: initialization_enemy()
+  defp update_enem(%{x: x, y: y}), do: %{x: x, y: y + 5}
 
   defp draw(character_data) do
     clear_background(Exray.Utils.Colors.white())
@@ -77,12 +86,11 @@ defmodule Hoge do
   defp initialization_character_data do
     %{
       player: %{x: 400, y: 550},
-      enemys: [
-        %{x: 100, y: 200},
-        %{x: 200, y: 100}
-      ]
+      enemys: Enum.map(1..100, fn _-> initialization_enemy() end)
     }
   end
+
+  defp initialization_enemy, do: %{x: Enum.random(2..15) * 50, y: Enum.random(-1..-40) * 50}
 
   defp move(262), do: 50
   defp move(263), do: -50
