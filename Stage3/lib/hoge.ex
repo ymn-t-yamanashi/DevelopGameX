@@ -5,6 +5,7 @@ defmodule Hoge do
   alias Exray.Shapes.Basic
   alias Exray.Text.Drawing
   alias Exray.Core.Input.Keyboard
+  alias Exray.Utils.Colors
 
   def run(width \\ 800, height \\ 600, title \\ "DevelopGameX") do
     init_window(width, height, title)
@@ -40,7 +41,7 @@ defmodule Hoge do
       |> then(&(&1 + player.x))
 
     character_data
-    |> Map.merge(%{player: %{x: x, y: character_data.player.y}})
+    |> Map.merge(%{player: %{x: x, y: player.y}})
   end
 
   defp update_enems(%{enemys: enemys} = character_data) do
@@ -49,15 +50,16 @@ defmodule Hoge do
   end
 
   defp update_enem(%{x: x, y: y}) when y > 650, do: initialization_enemy()
-  defp update_enem(%{x: x, y: y}), do: %{x: x, y: y + 5}
+  defp update_enem(%{x: x, y: y}), do: %{x: x, y: y + 3}
 
   defp draw(character_data) do
-    clear_background(Exray.Utils.Colors.black())
+    clear_background(Colors.black())
     begin_drawing()
 
     # ここに描画処理
     draw_player(character_data)
     draw_enems(character_data)
+    draw_count(character_data)
 
     end_drawing()
     character_data
@@ -65,20 +67,25 @@ defmodule Hoge do
 
   defp draw_player(%{player: player}) do
     create_rectangle(player.x, player.y)
-    |> Basic.draw_rectangle_rec(Exray.Utils.Colors.blue())
+    |> Basic.draw_rectangle_rec(Colors.blue())
+  end
+
+  defp draw_count(%{count: count}) do
+    Drawing.draw_text("count: #{count}", 10, 10, 30, Colors.green())
   end
 
   defp draw_enems(%{enemys: enemys}), do: Enum.each(enemys, &draw_enem/1)
 
   defp draw_enem(%{x: x, y: y}) do
     create_rectangle(x, y)
-    |> Basic.draw_rectangle_rec(Exray.Utils.Colors.red())
+    |> Basic.draw_rectangle_rec(Colors.red())
   end
 
   defp initialization_character_data do
     %{
       player: %{x: 400, y: 550},
-      enemys: Enum.map(1..100, fn _ -> initialization_enemy() end)
+      enemys: Enum.map(1..50, fn _ -> initialization_enemy() end),
+      count: 0
     }
   end
 
@@ -91,9 +98,9 @@ defmodule Hoge do
     }
   end
 
-  defp initialization_enemy, do: %{x: Enum.random(2..15) * 50, y: Enum.random(-1..-40) * 50}
+  defp initialization_enemy, do: %{x: Enum.random(2..40) * 20, y: Enum.random(-1..-40) * 20}
 
-  defp move(262), do: 50
-  defp move(263), do: -50
+  defp move(262), do: 30
+  defp move(263), do: -30
   defp move(_), do: 0
 end
