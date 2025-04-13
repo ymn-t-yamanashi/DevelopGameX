@@ -18,7 +18,7 @@ defmodule Hoge do
   @player_initial_x 400
   @player_initial_y 550
   @bottom_x 650
-  @enemy_count 50
+  @enemy_count 10
   @player_movement_speed 30
   @enem_movement_speed 2
   @rectangle_size 25.0
@@ -72,7 +72,7 @@ defmodule Hoge do
       # プレイヤー初期位置（中央下）
       player: %{x: @player_initial_x, y: @player_initial_y},
       # 敵キャラクターを@enemy_count体生成
-      enemys: Enum.map(1..@enemy_count, fn _ -> initialization_enemy() end),
+      enemys: Enum.map(1..@enemy_count, fn _ -> initialization_enemy(true) end),
       # 初期カウント数
       count: 0,
       bullet: Enum.map(1..10, fn _ -> %{x: 0.0, y: 0.0, existence: false} end)
@@ -90,8 +90,8 @@ defmodule Hoge do
   end
 
   # 敵キャラクターの初期位置を生成する関数
-  defp initialization_enemy,
-    do: %{x: Enum.random(50..750), y: Enum.random(-100..-4000), existence: true}
+  defp initialization_enemy(existence),
+    do: %{x: Enum.random(50..750), y: Enum.random(-100..-4000), existence: existence}
 
   # 移動量を取得する関数（左右移動）
   # 右矢印キー
@@ -154,12 +154,14 @@ defmodule Hoge do
   defp draw_enems(%{enemys: enemys}), do: Enum.each(enemys, &draw_enem/1)
 
   # 個々の敵キャラクターを描画する関数
-  defp draw_enem(%{x: x, y: y}) do
+  defp draw_enem(%{x: x, y: y, existence: true}) do
     # 矩形を作成
     create_rectangle(x, y)
     # 赤色で描画
     |> Basic.draw_rectangle_rec(Colors.red())
   end
+
+  defp draw_enem(%{x: _x, y: _y, existence: false}), do: nil
 
   # プレイヤーを描画する関数
   defp draw_player(%{player: player}) do
@@ -177,9 +179,9 @@ defmodule Hoge do
 
   # 個々の敵キャラクターを更新する関数（落下）
   # 床に達したらリセット
-  defp update_enem(%{x: x, y: y}) when y > @bottom_x, do: initialization_enemy()
+  defp update_enem(%{x: x, y: y, existence: existence }) when y > @bottom_x, do: initialization_enemy(existence)
   # 敵を下方向に移動
-  defp update_enem(%{x: x, y: y}), do: %{x: x, y: y + @enem_movement_speed}
+  defp update_enem(%{x: x, y: y, existence: existence}), do: %{x: x, y: y + @enem_movement_speed, existence: existence}
 
   # 衝突カウントを更新する関数
   defp update_count(%{player: player, enemys: enemys, count: count} = character_data) do
@@ -204,7 +206,7 @@ defmodule Hoge do
       # 衝突フラグ（1/0）
       collided: if(collided, do: 1, else: 0),
       # 衝突時敵をリセット
-      enemy: if(collided, do: initialization_enemy(), else: enemy)
+      enemy: if(collided, do: initialization_enemy(false), else: enemy)
     }
   end
 
