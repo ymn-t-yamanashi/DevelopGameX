@@ -74,7 +74,8 @@ defmodule Hoge do
       # 敵キャラクターを@enemy_count体生成
       enemys: Enum.map(1..@enemy_count, fn _ -> initialization_enemy() end),
       # 初期カウント数
-      count: 0
+      count: 0,
+      bullet: Enum.map(1..10, fn _ -> %{x: 0.0, y: 0.0, existence: false} end)
     }
   end
 
@@ -89,7 +90,8 @@ defmodule Hoge do
   end
 
   # 敵キャラクターの初期位置を生成する関数
-  defp initialization_enemy, do: %{x: Enum.random(50..750), y: Enum.random(-100..-4000)}
+  defp initialization_enemy,
+    do: %{x: Enum.random(50..750), y: Enum.random(-100..-4000), existence: true}
 
   # 移動量を取得する関数（左右移動）
   # 右矢印キー
