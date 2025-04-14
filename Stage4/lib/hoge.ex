@@ -17,7 +17,7 @@ defmodule Hoge do
   @window_height 600
   @player_initial_x 400
   @player_initial_y 550
-  @bottom_x 650
+  @bottom_y 650
   @enemy_count 10
   @player_movement_speed 30
   @enem_movement_speed 2
@@ -64,6 +64,8 @@ defmodule Hoge do
     |> update_enems()
     # 衝突カウントを更新
     |> update_count()
+    # 弾丸の移動を更新
+    |> update_bullets()
   end
 
   # 初期キャラクターデータを生成する関数
@@ -75,7 +77,7 @@ defmodule Hoge do
       enemys: Enum.map(1..@enemy_count, fn _ -> initialization_enemy(true) end),
       # 初期カウント数
       count: 0,
-      bullet: Enum.map(1..10, fn _ -> %{x: 0.0, y: 0.0, existence: false} end)
+      bullets: Enum.map(1..10, fn _ -> %{x: 300.0, y: 0.0, existence: true} end)
     }
   end
 
@@ -134,6 +136,8 @@ defmodule Hoge do
     draw_enems(character_data)
     draw_count(character_data)
 
+    draw_bullets(character_data)
+
     end_drawing()
     character_data
   end
@@ -163,6 +167,20 @@ defmodule Hoge do
 
   defp draw_enem(%{x: _x, y: _y, existence: false}), do: nil
 
+  # 弾丸を描画する関数
+  defp draw_bullets(%{bullets: bullets}), do: Enum.each(bullets, &draw_bullet/1)
+
+  # 個々の弾丸を描画する関数
+  defp draw_bullet(%{x: x, y: y, existence: true}) do
+    # 矩形を作成
+    create_rectangle(x, y)
+    # 赤色で描画
+    |> Basic.draw_rectangle_rec(Colors.lightgray())
+  end
+
+  defp draw_bullet(%{x: _x, y: _y, existence: false}), do: nil
+
+
   # プレイヤーを描画する関数
   defp draw_player(%{player: player}) do
     # 矩形を作成
@@ -179,9 +197,21 @@ defmodule Hoge do
 
   # 個々の敵キャラクターを更新する関数（落下）
   # 床に達したらリセット
-  defp update_enem(%{x: x, y: y, existence: existence }) when y > @bottom_x, do: initialization_enemy(existence)
+  defp update_enem(%{x: x, y: y, existence: existence }) when y > @bottom_y, do: initialization_enemy(existence)
   # 敵を下方向に移動
   defp update_enem(%{x: x, y: y, existence: existence}), do: %{x: x, y: y + @enem_movement_speed, existence: existence}
+
+
+  # 弾丸の移動を更新する関数
+  defp update_bullets(%{bullets: bullets} = character_data) do
+    character_data
+    |> Map.merge(%{bullets: Enum.map(bullets, &update_bullet/1)})
+  end
+
+  # 個々の弾丸を更新する関数
+  defp update_bullet(%{x: x, y: y, existence: existence }) when y < 0, do: %{x: x, y: @bottom_y, existence: existence}
+  # 弾丸を上方向に移動
+  defp update_bullet(%{x: x, y: y, existence: existence}), do: %{x: x, y: y - @enem_movement_speed, existence: existence}
 
   # 衝突カウントを更新する関数
   defp update_count(%{player: player, enemys: enemys, count: count} = character_data) do
