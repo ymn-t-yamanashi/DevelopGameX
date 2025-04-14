@@ -203,15 +203,15 @@ defmodule Hoge do
 
 
   # 弾丸の移動を更新する関数
-  defp update_bullets(%{bullets: bullets} = character_data) do
+  defp update_bullets(%{bullets: bullets, player: player} = character_data) do
     character_data
-    |> Map.merge(%{bullets: Enum.map(bullets, &update_bullet/1)})
+    |> Map.merge(%{bullets: Enum.map(bullets, fn bullet -> update_bullet(bullet, player) end ) })
   end
 
   # 個々の弾丸を更新する関数
-  defp update_bullet(%{x: x, y: y, existence: existence }) when y < 0, do: %{x: x, y: @bottom_y, existence: existence}
+  defp update_bullet(%{x: x, y: y, existence: existence }, player) when y < 0, do: %{x: player.x, y: player.y, existence: existence}
   # 弾丸を上方向に移動
-  defp update_bullet(%{x: x, y: y, existence: existence}), do: %{x: x, y: y - @enem_movement_speed, existence: existence}
+  defp update_bullet(%{x: x, y: y, existence: existence}, _player), do: %{x: x, y: y - @enem_movement_speed, existence: existence}
 
   # 衝突カウントを更新する関数
   defp update_count(%{player: player, enemys: enemys, count: count} = character_data) do
