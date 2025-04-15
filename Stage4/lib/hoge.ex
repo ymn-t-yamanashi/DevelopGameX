@@ -21,6 +21,7 @@ defmodule Hoge do
   @enemy_count 10
   @player_movement_speed 30
   @enem_movement_speed 2
+  @bullet_movement_speed 15
   @rectangle_size 25.0
   @text_position_x 10
   @text_position_y 10
@@ -58,14 +59,14 @@ defmodule Hoge do
   # ゲームオブジェクトの更新処理
   defp update(character_data) do
     character_data
-    # プレイヤーの移動を更新
-    |> update_player()
     # 敵キャラクターの移動を更新
     |> update_enems()
     # 衝突カウントを更新
     |> update_count()
     # 弾丸の移動を更新
     |> update_bullets()
+    # プレイヤーの移動を更新
+    |> update_player()
   end
 
   # 初期キャラクターデータを生成する関数
@@ -77,8 +78,8 @@ defmodule Hoge do
       enemys: Enum.map(1..@enemy_count, fn _ -> initialization_enemy(true) end),
       # 初期カウント数
       count: 0,
-      bullets: Enum.map(1..10, fn _ -> %{x: 300.0, y: 0.0, existence: false} end),
-      bullet_count: 0
+      bullets: Enum.map(1..10, fn _ -> %{x: @player_initial_x, y: @player_initial_y, existence: true} end),
+      bullet_count: 100
     }
   end
 
@@ -233,7 +234,7 @@ defmodule Hoge do
 
   # 弾丸を上方向に移動
   defp update_bullet(%{x: x, y: y, existence: true}, _player, bullet_count),
-    do: {bullet_count, %{x: x, y: y - @enem_movement_speed, existence: true}}
+    do: {bullet_count, %{x: x, y: y - @bullet_movement_speed, existence: true}}
 
   # bullet_countが一定フレームを超えたら発射可能にする
   defp update_bullet(%{x: x, y: y, existence: false}, _player, bullet_count)
