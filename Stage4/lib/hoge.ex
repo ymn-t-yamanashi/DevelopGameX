@@ -18,7 +18,7 @@ defmodule Hoge do
   @player_initial_x 400
   @player_initial_y 550
   @bottom_y 650
-  @enemy_count 10
+  @enemy_count 100
   @player_movement_speed 30
   @enem_movement_speed 2
   @bullet_movement_speed 3
@@ -33,7 +33,7 @@ defmodule Hoge do
   def run(width \\ @window_width, height \\ @window_height, title \\ "DevelopGameX") do
     # ウィンドウ初期化
     init_window(width, height, title)
-    # FPSを30に設定
+    # FPSを設定
     set_target_fps(@fps)
 
     # 初期キャラクターデータを作成し、メインループを開始
@@ -249,10 +249,17 @@ defmodule Hoge do
     do: {bullet_ok, bullet}
 
   # 衝突カウントを更新する関数
-  defp update_count(%{player: player, enemys: enemys, count: count} = character_data) do
+  defp update_count(%{enemys: enemys, count: count, bullets: bullets} = character_data) do
+    Enum.reduce(bullets, character_data, fn bullet, new_character_data ->
+      update_count_one(new_character_data, bullet)
+    end)
+  end
+
+  # 衝突カウントを更新する関数
+  defp update_count_one(%{enemys: enemys, count: count} = character_data, bullet) do
     # 各敵キャラクターとの衝突判定を行い、結果を集計
     collided_and_enemy =
-      Enum.map(enemys, fn enemy -> update_collided_and_enemy(player, enemy) end)
+      Enum.map(enemys, fn enemy -> update_collided_and_enemy(bullet, enemy) end)
 
     # 新しいカウント数を計算し、更新後の敵キャラクター配列を作成
     new_count = Enum.map(collided_and_enemy, fn i -> i.collided end) |> Enum.sum()
@@ -264,8 +271,8 @@ defmodule Hoge do
   end
 
   # 個々の敵キャラクターとの衝突判定を行う関数
-  defp update_collided_and_enemy(player, enemy) do
-    collided = collided?(player, enemy)
+  defp update_collided_and_enemy(bullet, enemy) do
+    collided = collided?(bullet, enemy)
 
     %{
       # 衝突フラグ（1/0）
